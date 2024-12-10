@@ -1,0 +1,20 @@
+name: "CI"
+
+on:
+  push:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: "./.github/actions/setup"
+          
+      - name: Run lint
+        run: |
+          docker compose run --rm --user 1000:1000 app npm run lint
+
+      - name: Run npm run test
+        run: |
+          docker compose run --rm --user 1000:1000 app npm run test:r
+    

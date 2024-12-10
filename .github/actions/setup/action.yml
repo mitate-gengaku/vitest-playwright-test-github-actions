@@ -1,0 +1,26 @@
+name: Composite docker setup
+description: composite docker setup
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+    - uses: docker/setup-buildx-action@v2
+    - uses: docker/build-push-action@v4
+      with:
+        context: .
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Setup container
+      run: |
+        mkdir -p src/node_modules
+        chmod 777 src/node_modules
+        sudo chown -R 1000:1000 src
+        docker compose up -d --build
+      shell: bash
+          
+    - name: Run npm ci
+      run : |
+        docker compose run --rm --user 1000:1000 app npm ci --ignore-scripts
+      shell: bash
